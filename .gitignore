@@ -1,0 +1,18 @@
+# Local design notes
+*.md
+!README.md
+
+# Erlang
+.eunit/
+*.beam
+*.plt
+erl_crash.dump
+rebar3.crashdump
+
+# rebar3
+_build/
+_checkouts/
+.rebar3/
+
+# Local tools
+.tools/

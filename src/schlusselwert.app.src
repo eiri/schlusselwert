@@ -1,0 +1,13 @@
+{application, schlusselwert, [
+    {description, "Development TCP protocol gate"},
+    {vsn, "0.1.0"},
+    {modules, []},
+    {registered, [schlusselwert, schlusselwert_registry, schlusselwert_proxy]},
+    {applications, [kernel, stdlib, sasl]},
+    {mod, {schlusselwert, []}},
+    {env, [
+        {config_path, "priv/signatures.config"},
+        {acceptors, 4},
+        {connect_timeout, 1000}
+    ]}
+]}.
