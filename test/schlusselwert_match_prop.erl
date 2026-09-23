@@ -7,7 +7,7 @@
 matcher_property_test() ->
     ?assert(
         proper:quickcheck(prop_matches_linear(), [
-            {numtests, 500}, {start_size, 1}, {max_size, 20}
+            {numtests, 2000}, {start_size, 1}, {max_size, 20}, long_result
         ])
     ).
 
@@ -18,8 +18,14 @@ prop_matches_linear() ->
         begin
             Protocols = protocols(lists:sublist(Specs, 6)),
             {ok, Matcher, _} = schlusselwert_match:compile(Protocols, 8),
-            schlusselwert_match:match(Matcher, Buffer) =:=
-                schlusselwert_match:linear(Matcher, Buffer)
+            lists:all(
+                fun(Size) ->
+                    Prefix = binary:part(Buffer, 0, Size),
+                    schlusselwert_match:match(Matcher, Prefix) =:=
+                        schlusselwert_match:linear(Matcher, Prefix)
+                end,
+                lists:seq(0, byte_size(Buffer))
+            )
         end
     ).
 
