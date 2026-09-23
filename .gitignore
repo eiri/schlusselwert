@@ -13,6 +13,3 @@ rebar3.crashdump
 _build/
 _checkouts/
 .rebar3/
-
-# Local tools
-.tools/

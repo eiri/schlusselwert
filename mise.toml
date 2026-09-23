@@ -1,17 +1,10 @@
 [tools]
 erlang = "29.0.6"
 rebar = "3.27.0"
-go = "1.26.8"
-
-[env]
-K6_VERSION = "v1.6.1"
-XK6_VERSION = "v1.3.5"
-XK6_REDIS_VERSION = "v0.4.1"
-XK6_SQL_VERSION = "v1.0.2"
-XK6_POSTGRES_VERSION = "v0.1.2"
+k6 = "2.3.0"
 
 [tasks.format]
-run = "rebar3 fmt"
+run = "rebar3 fmt --write"
 
 [tasks.test]
 run = "rebar3 eunit"
@@ -28,18 +21,14 @@ run = [
 run = "rebar3 as bench compile && erl -pa _build/bench/lib/schlusselwert/ebin -noshell -s schlusselwert_bench run -s init stop"
 
 [tasks.dev]
-run = "docker compose up --build"
-
-[tasks.k6-build]
-run = '''
-mkdir -p .tools
-GOBIN="$PWD/.tools" go install "go.k6.io/xk6/cmd/xk6@$XK6_VERSION"
-.tools/xk6 build "$K6_VERSION" --output .tools/k6 \
-  --with "github.com/grafana/xk6-redis@$XK6_REDIS_VERSION" \
-  --with "github.com/grafana/xk6-sql@$XK6_SQL_VERSION" \
-  --with "github.com/grafana/xk6-sql-driver-postgres@$XK6_POSTGRES_VERSION"
-'''
+run = "docker compose up --build --detach --wait"
 
 [tasks.smoke]
-depends = ["k6-build"]
-run = ".tools/k6 run scripts/smoke.js"
+run = '''
+for attempt in $(seq 1 30); do
+  curl --fail --silent http://127.0.0.1:8080/ >/dev/null && break
+  test "$attempt" -eq 30 && exit 1
+  sleep 1
+done
+k6 run scripts/smoke.js
+'''
