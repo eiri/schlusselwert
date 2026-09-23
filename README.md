@@ -1,5 +1,7 @@
 # Schlüsselwert
 
+[![Erlang CI](https://github.com/eiri/schlusselwert/actions/workflows/erlang.yml/badge.svg)](https://github.com/eiri/schlusselwert/actions/workflows/erlang.yml)
+
 Schlüsselwert is a TCP gate proxy built around idea of using [German Strings](https://cedardb.com/blog/german_strings/). The idea is to have a service that accepts HTTP, PostgreSQL, and Redis traffic on the same port, identifies each connection from its first bytes, and then relays it to a private backend. Unknown and ambiguous connections are closed.
 
 Naturally, this is a development-only thing; do not expose it to untrusted networks.

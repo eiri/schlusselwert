@@ -1,0 +1,44 @@
+name: Erlang CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - uses: erlef/setup-beam@v1.24.1
+        with:
+          otp-version: "29.0.6"
+          rebar3-version: "3.27.0"
+
+      - uses: actions/cache@v6.1.0
+        with:
+          path: |
+            ~/.cache/rebar3
+            _build
+          key: rebar-${{ runner.os }}-otp-29.0.6-${{ hashFiles('rebar.lock', 'rebar.config') }}
+
+      - name: Check
+        run: |
+          rebar3 compile
+          rebar3 fmt --check
+          rebar3 eunit
+          rebar3 dialyzer
+
+      - name: Build release
+        run: rebar3 as prod release
